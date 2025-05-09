@@ -1,0 +1,39 @@
+name: Build macOS App
+
+on:
+  push:
+    paths:
+      - 'client-3.py'
+      - 'requirements.txt'
+      - '.github/workflows/**'
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Build .app bundle
+        run: |
+          pyinstaller --onefile \
+                      --windowed \
+                      client-3.py
+
+      - name: Upload macOS app artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: client-3-mac-app
+          path: dist/*.app
